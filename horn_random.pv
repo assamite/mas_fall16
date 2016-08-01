@@ -1,0 +1,97 @@
+from math import *
+
+class circle:
+    def __init__(self, x, y, radius):
+        self.x = x
+        self.y = y
+        self.radius = radius
+
+    def move(self, dx, dy):
+        self.x += dx
+        self.y += dy
+    
+    def rotate(self, angle):
+        nx = self.x * cos(angle) - self.y * sin(angle)
+        ny = self.x * sin(angle) + self.y * cos(angle)
+        self.x = nx
+        self.y = ny
+
+    def grow(self, delta):
+        self.radius += delta
+
+
+class horn:
+    def __init__(self, num_circles, num_arms):
+        self.num_circles = num_circles
+        self.num_arms = num_arms
+        self.circles = []
+        for i in range(num_circles):
+            self.circles.append(circle(0, 0, 0))
+
+    def stack(self, sx, sy):
+        dx = sx / (self.num_circles - 1)
+        dy = sy / (self.num_circles - 1)
+        for i, c in enumerate(self.circles):
+            c.move(i*dx, i*dy)
+
+    def move(self, mx, my):
+        for c in self.circles:
+            c.move(mx, my)
+
+    def bend(self, angle):
+        delta = angle / (self.num_circles - 1)
+        for i, c in enumerate(self.circles):
+            c.rotate(i*delta)
+
+    def grow(self, radius1, radius2):
+        delta = (radius2 - radius1) / (self.num_circles - 1)
+        for i, c in enumerate(self.circles):
+            c.grow(i*delta)
+
+def express(g):
+    h = horn(g['num_points'], g['num_arms'])
+    h.move(g['xstack1'], g['ystack1'])
+    h.bend(g['bend_angle1'])
+    h.stack(g['xstack2'], g['ystack2'])
+    h.bend(g['bend_angle2'])
+    h.grow(g['radius1'], g['radius2'])
+    return h
+
+bounds = {
+    'num_points': {'min': 3, 'max': 50},
+    'num_arms': {'min': 3, 'max': 18},
+    'bend_angle1': {'min': -pi*2, 'max': pi*2},
+    'bend_angle2': {'min': -pi*2, 'max': pi*2},
+    'xstack1': {'min': -100.0, 'max': 100.0},
+    'ystack1': {'min': -100.0, 'max': 100.0},
+    'xstack2': {'min': -100.0, 'max': 100.0},
+    'ystack2': {'min': -100.0, 'max': 100.0},
+    'radius1': {'min': -100.0, 'max': 100.0},
+    'radius2': {'min': -100.0, 'max': 100.0}
+}
+
+genes = {}
+genes['num_points'] = random(bounds['num_points']['min'], bounds['num_points']['max'])
+genes['num_arms'] = random(bounds['num_arms']['min'], bounds['num_arms']['max'])
+genes['bend_angle1'] = random(bounds['bend_angle1']['min'], bounds['num_points']['max'])
+genes['bend_angle2'] = random(bounds['bend_angle2']['min'], bounds['num_points']['max'])
+genes['xstack1'] = random(bounds['xstack1']['min'], bounds['xstack1']['max'])
+genes['ystack1'] = random(bounds['ystack1']['min'], bounds['ystack1']['max'])
+genes['xstack2'] = random(bounds['xstack2']['min'], bounds['xstack2']['max'])
+genes['ystack2'] = random(bounds['ystack2']['min'], bounds['ystack2']['max'])
+genes['radius1'] = random(bounds['radius1']['min'], bounds['radius1']['max'])
+genes['radius2'] = random(bounds['radius2']['min'], bounds['radius2']['max'])
+
+size(512, 512)
+background(1)
+print(genes)
+h = express(genes)
+a = int(ceil(h.num_arms))
+delta = 360 / a
+with translate(512/2, 512/2):
+    with nofill(), stroke('black'), pen(0.1):
+        for j in range(a):
+            with rotate(degrees=j*delta):
+                for c in h.circles:
+                    with translate(c.x, c.y):
+                        arc(0, 0, c.radius)
