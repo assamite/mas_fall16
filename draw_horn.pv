@@ -1,0 +1,24 @@
+from math import *
+
+image_width = sys.argv[0]
+, points, arms, bend_angle1, bend_angle2, xstack1, xstack2, ystack1, ystack2, radius1, radius2 = sys.argv
+
+size(512, 512)
+background(1)
+
+
+
+h = express(gen)
+a = int(ceil(h.num_arms))
+delta = 360 / a
+translate(512/2, 512/2)
+nofill()
+pen(0.4)
+stroke('black')
+with bezier(0, 0):
+    for j in range(a):
+        moveto(0, 0)
+        with rotate(degrees=j*delta):
+            for c in h.circles:
+                with translate(c.x, c.y):
+                    arc(0, 0, c.radius)

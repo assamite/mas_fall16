@@ -1,0 +1,7 @@
+import sys
+import os
+
+size(512, 512)
+background(1)
+
+print(os.environ)

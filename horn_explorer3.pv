@@ -91,25 +91,31 @@ def setup(anim):
     anim.g2 = genotype(MIN_GENE_VALUES, MAX_GENE_VALUES)
     anim.g3 = genotype(MIN_GENE_VALUES, MAX_GENE_VALUES)
 
-gen = genotype(MIN_GENE_VALUES, MAX_GENE_VALUES)
 size(512, 512)
 background(1)
 speed(50)
 
-
-t = time()
-h = express(gen)
-a = int(ceil(h.num_arms))
-delta = 360 / a
-translate(512/2, 512/2)
-nofill()
-pen(0.4)
-stroke('black')
-with bezier(0, 0):
-    for j in range(a):
-        moveto(0, 0)
-        with rotate(degrees=j*delta):
-            for c in h.circles:
-                with translate(c.x, c.y):
-                    arc(0, 0, c.radius)
-print ("Drawn in {}".format(time()-t))
+def draw(anim):
+    t = time()
+    anim.pct += 0.01
+    if anim.pct >= 1:
+        anim.pct = 0.0
+        anim.g1, anim.g2 = anim.g2, anim.g1
+        anim.g2.mutate()
+        #anim.g1.mutate()
+    anim.g3.interpolate(anim.g1, anim.g2, anim.pct)
+    h = express(anim.g3)
+    a = int(ceil(h.num_arms))
+    delta = 360 / a
+    translate(512/2, 512/2)
+    nofill()
+    pen(0.4)
+    stroke('black')
+    with bezier(0, 0):
+        for j in range(a):
+            moveto(0, 0)
+            with rotate(degrees=j*delta):
+                for c in h.circles:
+                    with translate(c.x, c.y):
+                        arc(0, 0, c.radius)
+    print ("Drawn in {}".format(time()-t))
