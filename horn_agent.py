@@ -118,7 +118,7 @@ class HornAgent(CreativeAgent):
         scaled to agent's preferred image size.
         '''
         h = express(g)
-        img = h.draw(512)
+        img = h.draw(512, perimeter=False)
         img = misc.imresize(img, [self.img_size, self.img_size])
         fimg = img / 255.0
         return fimg

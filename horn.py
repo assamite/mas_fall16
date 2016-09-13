@@ -62,7 +62,7 @@ class Horn:
         for i, c in enumerate(self.circles):
             c.grow(i*delta)
 
-    def draw(self, image_width, aa=False):
+    def draw(self, image_width, perimeter=True):
         '''Draw horn(s) into a square 2D numpy array.
 
         :param int image_width: Width of the square image
@@ -79,7 +79,7 @@ class Horn:
                 cx = int(imgc + c.x * np.cos(angle) - c.y * np.sin(angle))
                 cy = int(imgc + c.x * np.sin(angle) + c.y * np.cos(angle))
                 rad = int(abs(c.radius))
-                if aa:
+                if perimeter:
                     rr, cc, val = draw.circle_perimeter_aa(cx, cy, rad)
                     # Remove indeces that are not inside the image borders
                     rrc = (rr < image_width) & (rr >= 0)
